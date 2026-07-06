@@ -1,4 +1,4 @@
-const CACHE = 'rutina-cutting-v3';
+const CACHE = 'rutina-cutting-v4';
 const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
