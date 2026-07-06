@@ -137,6 +137,12 @@
   .tech .cue::before{display:none}
   .ytlink{display:inline-block; margin-top:9px; color:var(--accent); font-size:var(--fs0); font-weight:700; text-decoration:none}
   .ytlink::before{display:none}
+  details.alts>summary svg{width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto; opacity:.85}
+  details.alts>summary .caret{margin-left:auto}
+  .warmc .exname svg{width:17px; height:17px; stroke:var(--gold); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; vertical-align:-3px; margin-right:5px}
+  @keyframes exIn{from{opacity:0; transform:translateY(7px)} to{opacity:1; transform:none}}
+  .ex{animation:exIn .26s ease both}
+  @media (prefers-reduced-motion:reduce){.ex{animation:none}}
 
   /* macros */
   .view{display:none}
@@ -172,8 +178,9 @@
   /* bottom nav */
   nav{
     position:fixed; left:0; right:0; bottom:0; z-index:30;
-    background:rgba(18,23,27,.92); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    background:#12171B;
     border-top:1px solid var(--line);
+    transform:translateZ(0);
     display:grid; grid-template-columns:repeat(4,1fr);
     padding:8px 6px calc(8px + env(safe-area-inset-bottom));
   }
@@ -302,8 +309,10 @@
     <div class="panel">
       <h3>Reglas base</h3>
       <ul class="tips">
-        <li><b>2 series base, 3 en prioritarios</b><small>Pecho, espalda, hombro y brazos llevan la serie extra.</small></li>
-        <li><b>Descansos</b><small>Compuestos 2.5-3 min. Superserie y aislados 60-90 s.</small></li>
+        <li><b>Series efectivas, no relleno</b><small>Lo que crece es la serie dura (cerca del fallo) con tensión y rango completo. 6-8 series duras por músculo/sesión es el punto óptimo; más suma fatiga sin beneficio (volumen basura). Por eso: menos ejercicios, mejor ejecutados.</small></li>
+        <li><b>2 series base, 3 en prioritarios</b><small>Pecho, espalda, hombro y brazos llevan la serie extra. Piernas 2x/semana en mantenimiento.</small></li>
+        <li><b>Descansos</b><small>Compuestos 2.5-3 min, superserie/aislados 90 s. Descanso largo = más estímulo por serie, necesitas menos series (Schoenfeld 2016).</small></li>
+        <li><b>Rango y estiramiento</b><small>Controla la fase de estiramiento (abajo). Entrenar el músculo estirado da igual o más crecimiento (Wolf 2024).</small></li>
         <li><b>Tempo</b><small>2 s de bajada controlada, ~1 s de subida. Sin rebotes.</small></li>
         <li><b>Progresión</b><small>Completas el tope de reps en todas las series al RIR objetivo → subes 2.5-5% la próxima vez.</small></li>
         <li><b>Cerca del fallo (matiz)</b><small>Compuestos pesados: deja 1-3 RIR (suficiente y más seguro). Aislados y superseries: puedes acercarte más, 0-2 RIR. Pasado 1-3 RIR ya no crece más (Refalo 2024).</small></li>
@@ -359,54 +368,52 @@ var DAYS=[
   cardio:"Caminadora 20-25 min · 5.0-5.5 km/h · inclinación 6-9% · zona 2",
   warm:["Caminadora suave 2-3 min","Rotaciones externas con banda 2×15","1 serie ligera de press"],
   ex:[
-   E("Press banca barra","Pecho",3,"5-8","3 min",1,"",["Press mancuernas neutro","Press en máquina","Smith"],"Escápulas retraídas y pies firmes. Baja la barra al esternón, empuja sin despegar los glúteos.","press de banca con barra tecnica"),
-   E("Press inclinado mancuernas 30°","Pecho",3,"8-10","2.5 min",1,"",["Inclinado en Smith","Máquina inclinada"],"Banco a 30°. Baja controlado hasta sentir estiramiento en el pecho, sube sin chocar las mancuernas.","press inclinado con mancuernas"),
-   E("Elevaciones laterales","Hombro",3,"12-15","75 s",1,"A",["Polea unilateral","Máquina lateral"],"Codos algo flexionados. Sube guiando con los codos hasta la altura del hombro, baja lento.","elevaciones laterales tecnica"),
-   E("Extensión tríceps cuerda","Tríceps",3,"10-12","75 s",1,"A",["Barra EZ","Press francés"],"Codos pegados al torso. Separa la cuerda al final del movimiento, control en la subida.","extension de triceps en polea con cuerda"),
-   E("Press militar sentado","Hombro",2,"8-10","2 min",0,"",["Press hombro máquina","Arnold"],"Core apretado, sin arquear la espalda. Empuja arriba y baja a la altura de la barbilla.","press militar con mancuernas sentado")
+   E("Press banca barra","Pecho",3,"5-8","3 min",1,"",["Press mancuernas neutro","Press en máquina","Smith"],"Escápulas retraídas y pies firmes. Baja la barra al esternón sintiendo el estiramiento del pecho, empuja sin despegar los glúteos.","press de banca con barra tecnica"),
+   E("Press inclinado mancuernas 30°","Pecho",3,"8-10","2.5 min",1,"",["Inclinado en Smith","Máquina inclinada"],"Banco a 30°. Baja hasta un buen estiramiento del pecho (esa fase estirada es la que más crece), sube sin chocar las mancuernas.","press inclinado con mancuernas"),
+   E("Elevaciones laterales","Hombro",3,"12-15","90 s",1,"A",["Polea unilateral","Máquina lateral"],"Codos algo flexionados. Sube guiando con los codos hasta la altura del hombro, baja lento controlando.","elevaciones laterales tecnica"),
+   E("Extensión tríceps cuerda","Tríceps",3,"10-12","90 s",1,"A",["Barra EZ","Press francés"],"Codos pegados al torso. Extiende completo separando la cuerda al final, controla la subida.","extension de triceps en polea con cuerda")
   ]},
  {code:"D2",short:"Tracción",title:"Tracción · Espalda + Bíceps + Delt post.",
   cardio:"Caminadora 15-20 min · 5.0-5.5 km/h · inclinación 5-7% · zona 2",
   warm:["Jalón liviano 1-2 series","Movilidad escapular 1 min"],
   ex:[
-   E("Jalón al pecho / dominadas asistidas","Espalda",3,"8-10","2.5 min",1,"",["Jalón agarre neutro","Máquina jalón"],"Pecho arriba. Lleva la barra al pecho tirando con los codos hacia abajo, sin balancearte.","jalon al pecho tecnica espalda"),
-   E("Remo pesado (barra, T o Hammer)","Espalda",3,"8-10","2.5-3 min",1,"",["Remo polea baja","Remo mancuerna unilateral"],"Espalda neutra. Tira hacia el ombligo apretando la escápula, sin tirón de la zona lumbar.","remo con barra tecnica"),
-   E("Face pull","Delt post.",3,"15","75 s",0,"A",["Reverse pec deck"],"Tira la cuerda hacia la frente separando las manos, codos altos, aprieta atrás.","face pull tecnica"),
-   E("Curl inclinado mancuernas","Bíceps",3,"10-12","75 s",1,"A",["Curl polea baja"],"Banco inclinado, brazos detrás del cuerpo. Sube sin mover el codo, estira abajo.","curl inclinado con mancuernas biceps"),
-   E("Pájaros / reverse fly","Delt post.",2,"15","60-75 s",0,"B",["Banda","Máquina"],"Inclínate al frente. Abre los brazos con codos suaves, aprieta el deltoide posterior arriba.","pajaros deltoide posterior mancuernas"),
-   E("Curl martillo","Bíceps",2,"12","60-75 s",1,"B",["Mancuernas"],"Agarre neutro (martillo). Sube sin balancear, control en la bajada.","curl martillo con mancuernas")
+   E("Jalón al pecho / dominadas asistidas","Espalda",3,"8-10","2.5 min",1,"",["Jalón agarre neutro","Máquina jalón"],"Pecho arriba. Estira bien arriba, lleva la barra al pecho tirando con los codos hacia abajo, sin balancearte.","jalon al pecho tecnica espalda"),
+   E("Remo pesado (barra, T o Hammer)","Espalda",3,"8-10","2.5-3 min",1,"",["Remo polea baja","Remo mancuerna unilateral"],"Espalda neutra. Estira al frente, tira hacia el ombligo apretando la escápula, sin tirón lumbar.","remo con barra tecnica"),
+   E("Face pull","Delt post.",3,"12-15","90 s",0,"A",["Reverse pec deck"],"Tira la cuerda hacia la frente separando las manos, codos altos, aprieta atrás.","face pull tecnica"),
+   E("Curl inclinado mancuernas","Bíceps",3,"10-12","90 s",1,"A",["Curl polea baja"],"Banco inclinado, brazos detrás del cuerpo (bíceps estirado). Sube sin mover el codo, estira completo abajo.","curl inclinado con mancuernas biceps"),
+   E("Curl martillo","Bíceps",2,"10-12","90 s",1,"",["Mancuernas"],"Agarre neutro (martillo). Sube sin balancear, control total en la bajada.","curl martillo con mancuernas")
   ]},
  {code:"D3",short:"Pierna",title:"Pierna · Cuádriceps + Glúteo + Core",
   cardio:"Caminadora 10-15 min suave · 4.5-5.0 km/h · inclinación 3-5% (día de pierna, ligero)",
   warm:["Bici 3 min","Sentadillas al aire 2×10","Puente de glúteo 2×10"],
   ex:[
-   E("Prensa inclinada o Hack squat","Cuádriceps",3,"8-12","3 min",0,"",["Sentadilla goblet","Smith"],"Pies a media plataforma. Baja hasta ~90° sin despegar la cadera, empuja con el talón.","prensa de pierna tecnica"),
-   E("Búlgara o zancadas","Glúteo",2,"10-12 /pierna","2 min",0,"",["Prensa unilateral"],"Pie trasero elevado. Baja recto con el torso firme, empuja con la pierna delantera.","sentadilla bulgara tecnica"),
-   E("Extensión de cuádriceps","Cuádriceps",2,"12-15","90 s",0,"",["Unilateral"],"Aprieta el cuádriceps 1 s arriba, baja controlado, no dejes caer el peso.","extension de cuadriceps maquina"),
-   E("Elevación de pantorrilla","Pantorrilla",3,"12-20","60-90 s",0,"",["En prensa","Sentado"],"Rango completo: estira abajo, sube a la punta del pie, pausa arriba.","elevacion de pantorrilla gemelos"),
-   E("Woodchopper en polea","Core",3,"10-12 /lado","60-90 s",0,"",["Ab-wheel","Elevación rodillas colgado"],"Gira desde el core llevando la polea de arriba a abajo en diagonal, cadera estable.","woodchopper en polea core")
+   E("Prensa inclinada o Hack squat","Cuádriceps",3,"8-12","3 min",0,"",["Sentadilla goblet","Smith"],"Pies a media plataforma. Baja profundo (buen estiramiento del cuádriceps) sin despegar la cadera, empuja con el talón.","prensa de pierna tecnica"),
+   E("Búlgara o zancadas","Glúteo",2,"10-12 /pierna","2 min",0,"",["Prensa unilateral"],"Pie trasero elevado. Baja recto y profundo con el torso firme, empuja con la pierna delantera.","sentadilla bulgara tecnica"),
+   E("Extensión de cuádriceps","Cuádriceps",2,"12-15","90 s",0,"A",["Unilateral"],"Aprieta el cuádriceps 1 s arriba, baja controlado, no dejes caer el peso.","extension de cuadriceps maquina"),
+   E("Elevación de pantorrilla","Pantorrilla",2,"12-20","90 s",0,"A",["En prensa","Sentado"],"Rango completo: estira bien abajo, sube a la punta del pie, pausa arriba.","elevacion de pantorrilla gemelos"),
+   E("Woodchopper en polea","Core",3,"10-12 /lado","90 s",0,"",["Ab-wheel","Elevación rodillas colgado"],"Gira desde el core llevando la polea de arriba a abajo en diagonal, cadera estable.","woodchopper en polea core")
   ]},
  {code:"D4",short:"Upper",title:"Upper · Pecho + Espalda + Hombro + Brazo",
   cardio:"Caminadora 25-30 min · 5.0-6.0 km/h · inclinación 6-8% · zona 2",
   warm:["Caminadora o máquina 3 min","1 serie de aproximación al primer press"],
   ex:[
-   E("Press inclinado máquina/mancuernas","Pecho",3,"8-12","2.5 min",1,"",["Smith inclinado"],"Ajusta el asiento para que las manijas queden a media altura del pecho. Empuja controlado.","press inclinado en maquina pecho"),
-   E("Remo o jalón (el que no priorizaste el D2)","Espalda",3,"8-12","2.5 min",1,"",["Máquina Hammer","Polea"],"Aprieta la escápula al tirar, control total en la vuelta.","remo en maquina espalda"),
-   E("Aperturas pec deck","Pecho",2,"12-15","75 s",0,"A",["Cruces en polea"],"Codos a la altura del pecho. Junta apretando el pecho, abre lento hasta estirar.","aperturas en pec deck"),
-   E("Elevaciones laterales","Hombro",3,"12-15","75 s",1,"A",["Máquina lateral"],"Codos algo flexionados. Sube guiando con los codos hasta la altura del hombro, baja lento.","elevaciones laterales tecnica"),
-   E("Extensión tríceps","Tríceps",3,"10-12","75 s",1,"B",["Variantes en polea"],"Codos fijos al torso. Extiende completo y controla la subida.","extension de triceps en polea"),
-   E("Curl bíceps","Bíceps",3,"10-12","75 s",1,"B",["Curl polea"],"Sube sin mover el codo, aprieta arriba, estira abajo.","curl de biceps con barra")
+   E("Press inclinado máquina/mancuernas","Pecho",3,"8-12","2.5 min",1,"",["Smith inclinado"],"Ajusta el asiento para que las manijas queden a media altura del pecho. Baja hasta estirar, empuja controlado.","press inclinado en maquina pecho"),
+   E("Remo o jalón (el que no priorizaste el D2)","Espalda",3,"8-12","2.5 min",1,"",["Máquina Hammer","Polea"],"Estira al frente, aprieta la escápula al tirar, control total en la vuelta.","remo en maquina espalda"),
+   E("Aperturas pec deck","Pecho",3,"12-15","90 s",0,"A",["Cruces en polea"],"Codos a la altura del pecho. Junta apretando el pecho, abre lento hasta estirar bien.","aperturas en pec deck"),
+   E("Elevaciones laterales","Hombro",3,"12-15","90 s",1,"A",["Máquina lateral"],"Codos algo flexionados. Sube guiando con los codos hasta la altura del hombro, baja lento.","elevaciones laterales tecnica"),
+   E("Extensión tríceps","Tríceps",3,"10-12","90 s",1,"B",["Variantes en polea"],"Codos fijos al torso. Extiende completo y controla la subida.","extension de triceps en polea"),
+   E("Curl bíceps","Bíceps",3,"10-12","90 s",1,"B",["Curl polea"],"Sube sin mover el codo, aprieta arriba, estira completo abajo.","curl de biceps con barra")
   ]},
  {code:"D5",short:"Posterior",title:"Posterior · Glúteo/Femoral + Brazo + Core",
   cardio:"Caminadora 25-30 min · 5.0-6.0 km/h · inclinación 6-9% · zona 2 (o HIIT 6-8×1 min opcional)",
   warm:["Caminata suave 3 min","Puente de glúteo 2×10","Buenos días ligeros 2×10"],
   ex:[
-   E("Peso muerto rumano","Femoral",3,"8-10","3 min",0,"",["RDL con mancuernas","Buenos días en máquina"],"Rodillas casi rectas. Empuja la cadera atrás bajando la barra pegada a la pierna, siente el femoral, sube apretando glúteo.","peso muerto rumano tecnica"),
-   E("Curl femoral máquina","Femoral",2,"10-12","90 s",0,"",["Nórdico asistido","Fitball"],"Talones al rodillo. Curl completo apretando el femoral, baja lento.","curl femoral tumbado maquina"),
-   E("Hip thrust o patada de glúteo","Glúteo",2,"10-12","90 s",0,"",["Puente en máquina","Abductor"],"Barra en la cadera. Empuja con el talón hasta alinear tronco y muslo, aprieta glúteo arriba.","hip thrust tecnica gluteo"),
-   E("Curl barra Z","Bíceps",3,"10-12","75 s",1,"A",["Curl polea"],"Codos fijos al torso. Sube sin balancear, control en la bajada.","curl con barra z biceps"),
-   E("Fondos en banco o press cerrado","Tríceps",3,"10-12","75 s",1,"A",["Tríceps polea"],"Manos al borde del banco. Baja flexionando el codo, empuja con el tríceps.","fondos en banco para triceps"),
-   E("Crunch cableado","Core",3,"12-15","75 s",0,"",["Elevación de piernas colgado"],"Redondea la espalda bajando con el abdomen, no tires con los brazos, aprieta abajo.","crunch en polea abdominales")
+   E("Peso muerto rumano","Femoral",3,"8-10","3 min",0,"",["RDL con mancuernas","Buenos días en máquina"],"Rodillas casi rectas. Empuja la cadera atrás bajando la barra pegada a la pierna hasta un buen estiramiento del femoral, sube apretando glúteo.","peso muerto rumano tecnica"),
+   E("Curl femoral máquina","Femoral",2,"10-12","90 s",0,"A",["Nórdico asistido","Fitball"],"Talones al rodillo. Curl completo apretando el femoral, baja lento estirando.","curl femoral tumbado maquina"),
+   E("Hip thrust o patada de glúteo","Glúteo",2,"10-12","90 s",0,"A",["Puente en máquina","Abductor"],"Barra en la cadera. Empuja con el talón hasta alinear tronco y muslo, aprieta glúteo arriba 1 s.","hip thrust tecnica gluteo"),
+   E("Curl barra Z","Bíceps",3,"10-12","90 s",1,"B",["Curl polea"],"Codos fijos al torso. Sube sin balancear, control en la bajada, estira abajo.","curl con barra z biceps"),
+   E("Fondos en banco o press cerrado","Tríceps",3,"10-12","90 s",1,"B",["Tríceps polea"],"Manos al borde del banco. Baja flexionando el codo hasta estirar, empuja con el tríceps.","fondos en banco para triceps"),
+   E("Crunch cableado","Core",3,"12-15","90 s",0,"",["Elevación de piernas colgado"],"Redondea la espalda bajando con el abdomen, no tires con los brazos, aprieta abajo.","crunch en polea abdominales")
   ]}
 ];
 
@@ -450,12 +457,13 @@ function renderTrain(){
   wrap.innerHTML=
     '<div class="ex warmc"><div class="exhead">'
       +'<div class="eyebrow"><span class="chip">Antes de empezar</span></div>'
-      +'<div class="exname">Calentamiento · 3-5 min</div>'
+      +'<div class="exname"><svg viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h4"/></svg>Calentamiento · 3-5 min</div>'
       +'<div class="altlist" style="padding:10px 0 0">'+wsteps+'</div>'
     +'</div></div>';
   d.ex.forEach(function(x,ei){
     var card=document.createElement("div");
     card.className="ex"+(x.ss?" ss":"");
+    card.style.animationDelay=(ei*0.03)+"s";
     var chips='<span class="chip">'+esc(x.muscle)+'</span>';
     if(x.pri) chips+='<span class="chip pri">Prioridad</span>';
     if(x.ss) chips+='<span class="chip ss">Superserie '+x.ss+'</span>';
@@ -484,9 +492,9 @@ function renderTrain(){
         +'</div>'
       +'</div>'
       +'<div class="sets">'+sets+'</div>'
-      +'<details class="alts"><summary><span class="caret"></span>Cómo se hace</summary><div class="altlist tech"><div class="cue">'+esc(x.cue)+'</div>'
+      +'<details class="alts"><summary><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 9l5 3-5 3z"/></svg>Cómo se hace<span class="caret"></span></summary><div class="altlist tech"><div class="cue">'+esc(x.cue)+'</div>'
         +'<a class="ytlink" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.yt)+'" target="_blank" rel="noopener">Ver video en YouTube ↗</a></div></details>'
-      +'<details class="alts"><summary><span class="caret"></span>Alternativas · si la máquina está ocupada</summary><div class="altlist">'+alts+'</div></details>';
+      +'<details class="alts"><summary><svg viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>Alternativas<span class="caret"></span></summary><div class="altlist">'+alts+'</div></details>';
     wrap.appendChild(card);
   });
 
@@ -516,7 +524,7 @@ function renderMeso(){
 }
 
 function calcMacros(){
-  var w=parseFloat(document.getElementById("wKg").value);
+  var w=parseFloat((document.getElementById("wKg").value||"").replace(",","."));
   if(!w||w<40||w>200){
     document.getElementById("protVal").textContent="— g";
     document.getElementById("calVal").textContent="—";
@@ -607,7 +615,7 @@ function drawSpark(keys){
 }
 
 function saveBW(){
-  var v=parseFloat(document.getElementById("bwInput").value);
+  var v=parseFloat((document.getElementById("bwInput").value||"").replace(",","."));
   if(!v||v<30||v>250){document.getElementById("bwInput").focus();return;}
   db.bw=db.bw||{}; db.bw[todayKey()]=Math.round(v*10)/10; save();
   renderWeight(); checkPending(); renderTrain();
