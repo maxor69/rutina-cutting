@@ -102,7 +102,7 @@
 
   /* log */
   .sets{border-top:1px solid var(--line); background:rgba(255,255,255,.012)}
-  .setrow{display:grid; grid-template-columns:34px 1fr 1fr; gap:8px; align-items:center; padding:8px 14px}
+  .setrow{display:grid; grid-template-columns:34px 1fr 1fr .72fr; gap:8px; align-items:center; padding:8px 14px}
   .setrow+.setrow{border-top:1px solid rgba(42,52,59,.6)}
   .slabel{font-size:11px; color:var(--faint); font-weight:800; letter-spacing:.05em}
   .field{position:relative}
@@ -315,7 +315,7 @@
         <li><b>Superseries: opcional</b><small>La rutina va toda en series normales, una estación a la vez (no tienes que ocupar dos aparatos). Solo encadena dos ejercicios si comparten la MISMA estación (misma polea o mismas mancuernas).</small></li>
         <li><b>Rango y estiramiento</b><small>Controla la fase de estiramiento (abajo). Entrenar el músculo estirado da igual o más crecimiento (Wolf 2024).</small></li>
         <li><b>Tempo</b><small>2 s de bajada controlada, ~1 s de subida. Sin rebotes.</small></li>
-        <li><b>Progresión</b><small>Completas el tope de reps en todas las series al RIR objetivo → subes 2.5-5% la próxima vez.</small></li>
+        <li><b>Progresión</b><small>Completas el tope de reps en <b>todas</b> las series al RIR objetivo → subes 2.5-5% la próxima vez. Anota el RIR de cada serie: sin ese dato la progresión no se dispara y la carga se queda quieta semanas (pasó con banca, PMR y press inclinado en el meso 1).</small></li>
         <li><b>Cerca del fallo (matiz)</b><small>Compuestos pesados: deja 1-3 RIR (suficiente y más seguro). Aislados y superseries: puedes acercarte más, 0-2 RIR. Pasado 1-3 RIR ya no crece más (Refalo 2024).</small></li>
         <li><b>Cardio: pesas primero</b><small>El cardio va DESPUÉS de las pesas. Mayormente caminadora zona 2 (mínima interferencia). HIIT al mínimo, cuesta más recuperar en déficit.</small></li>
         <li><b>Calentamiento (obligatorio)</b><small>2-3 min suave + 1-2 series de aproximación. Corto pero no lo saltes.</small></li>
@@ -327,6 +327,9 @@
       <h3>Tus datos</h3>
       <p class="lead">Todo tu historial (cargas por semana + peso) se guarda solo. Cópialo para analizarlo en Sheets o Notas.</p>
       <button class="btn" id="exportBtn" style="width:100%">Copiar datos (CSV)</button>
+      <p class="lead" style="margin-top:16px">Al terminar las 6 semanas, empieza un mesociclo nuevo. El historial viejo se conserva y arrancas con las casillas en blanco.</p>
+      <button class="btn" id="newMesoBtn" style="width:100%">Empezar mesociclo nuevo</button>
+      <p class="note" style="margin-top:10px">Mesociclo actual: <b id="mesoNum">1</b></p>
       <p class="note" id="exportMsg" style="margin-top:10px"></p>
     </div>
   </section>
@@ -348,7 +351,7 @@
 "use strict";
 var STORE="frankgym_v1";
 var db=load();
-function load(){try{return JSON.parse(localStorage.getItem(STORE))||{week:1,logs:{}}}catch(e){return{week:1,logs:{}}}}
+function load(){try{var d=JSON.parse(localStorage.getItem(STORE))||{week:1,meso:1,logs:{},notes:{}};if(!d.meso)d.meso=1;if(!d.notes)d.notes={};return d}catch(e){return{week:1,meso:1,logs:{},notes:{}}}}
 function save(){try{localStorage.setItem(STORE,JSON.stringify(db))}catch(e){}}
 
 var RIR={1:"2-3",2:"2-3",3:"1-2",4:"0-1",5:"4-5",6:"2-3"};
@@ -369,7 +372,7 @@ var DAYS=[
   cardio:"Caminadora 20-25 min · 5.0-5.5 km/h · inclinación 6-9% · zona 2",
   warm:["Caminadora suave 2-3 min","Rotaciones externas con banda 2×15","1 serie ligera de press"],
   ex:[
-   E("Press banca barra","Pecho",3,"5-8","3 min",1,"",["Press mancuernas neutro","Press en máquina","Smith"],"Escápulas retraídas y pies firmes. Baja la barra al esternón sintiendo el estiramiento del pecho, empuja sin despegar los glúteos.","press de banca con barra tecnica"),
+   E("Press banca mancuernas","Pecho",3,"6-8","3 min",1,"",["Press en máquina","Smith plano","Barra con pines de seguridad"],"Arranca en 26-28 por mancuerna. Escápulas retraídas y pies firmes. Baja hasta sentir el estiramiento del pecho, empuja sin chocar las mancuernas. Puedes fallar sin spotter: si no sale, sueltas. Ese es el punto del cambio.","press de banca con mancuernas tecnica"),
    E("Press inclinado mancuernas 30°","Pecho",2,"8-10","2.5 min",1,"",["Inclinado en Smith","Máquina inclinada"],"Banco a 30°. Baja hasta un buen estiramiento del pecho (esa fase estirada es la que más crece), sube sin chocar las mancuernas.","press inclinado con mancuernas"),
    E("Elevaciones laterales","Hombro",3,"12-15","90 s",1,"",["Polea unilateral","Máquina lateral"],"Codos algo flexionados. Sube guiando con los codos hasta la altura del hombro, baja lento controlando.","elevaciones laterales tecnica"),
    E("Extensión tríceps cuerda","Tríceps",2,"10-12","90 s",1,"",["Barra EZ","Press francés"],"Codos pegados al torso. Extiende completo separando la cuerda al final, controla la subida.","extension de triceps en polea con cuerda")
@@ -399,7 +402,7 @@ var DAYS=[
   warm:["Caminadora o máquina 3 min","1 serie de aproximación al primer press"],
   ex:[
    E("Press inclinado máquina/mancuernas","Pecho",3,"8-12","2.5 min",1,"",["Smith inclinado"],"Ajusta el asiento para que las manijas queden a media altura del pecho. Baja hasta estirar, empuja controlado.","press inclinado en maquina pecho"),
-   E("Remo o jalón (el que no priorizaste el D2)","Espalda",2,"8-12","2.5 min",1,"",["Máquina Hammer","Polea"],"Estira al frente, aprieta la escápula al tirar, control total en la vuelta.","remo en maquina espalda"),
+   E("Jalón al pecho","Espalda",2,"8-12","2.5 min",1,"",["Máquina Hammer","Polea"],"Fijo en jalón: la elección libre solo ensuciaba el registro. Estira arriba, lleva la barra al pecho apretando la escápula, control total en la vuelta.","jalon al pecho tecnica"),
    E("Elevaciones laterales","Hombro",2,"12-15","90 s",1,"",["Máquina lateral"],"Codos algo flexionados. Sube guiando con los codos hasta la altura del hombro, baja lento.","elevaciones laterales tecnica"),
    E("Extensión tríceps","Tríceps",2,"10-12","90 s",1,"",["Variantes en polea"],"Codos fijos al torso. Extiende completo y controla la subida.","extension de triceps en polea"),
    E("Curl bíceps","Bíceps",2,"10-12","90 s",1,"",["Curl polea"],"Sube sin mover el codo, aprieta arriba, estira completo abajo.","curl de biceps con barra")
@@ -408,7 +411,7 @@ var DAYS=[
   cardio:"Caminadora 25-30 min · 5.0-6.0 km/h · inclinación 6-9% · zona 2 (o HIIT 6-8×1 min opcional)",
   warm:["Caminata suave 3 min","Puente de glúteo 2×10","Buenos días ligeros 2×10"],
   ex:[
-   E("Peso muerto rumano","Femoral",3,"8-10","3 min",0,"",["RDL con mancuernas","Buenos días en máquina"],"Rodillas casi rectas. Empuja la cadera atrás bajando la barra pegada a la pierna hasta un buen estiramiento del femoral, sube apretando glúteo.","peso muerto rumano tecnica"),
+   E("Peso muerto rumano","Femoral",3,"8-10","3 min",0,"",["RDL con mancuernas","Buenos días en máquina"],"Arranca en 32.5 por lado: ya lo hiciste en la semana 3 del meso pasado. Rodillas casi rectas. Empuja la cadera atrás bajando la barra pegada a la pierna hasta un buen estiramiento del femoral, sube apretando glúteo.","peso muerto rumano tecnica"),
    E("Curl femoral máquina","Femoral",2,"10-12","90 s",0,"",["Nórdico asistido","Fitball"],"Talones al rodillo. Curl completo apretando el femoral, baja lento estirando.","curl femoral tumbado maquina"),
    E("Fondos en banco o press cerrado","Tríceps",2,"10-12","90 s",1,"",["Tríceps polea"],"Manos al borde del banco. Baja flexionando el codo hasta estirar, empuja con el tríceps.","fondos en banco para triceps"),
    E("Crunch cableado","Core",2,"12-15","90 s",0,"",["Elevación de piernas colgado"],"Redondea la espalda bajando con el abdomen, no tires con los brazos, aprieta abajo.","crunch en polea abdominales")
@@ -418,7 +421,9 @@ var DAYS=[
 var curDay=0;
 
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
-function keyFor(di,ei,si,wk){return "l."+di+"."+ei+"."+si+"."+wk}
+function mSfx(){return db.meso>1?".m"+db.meso:""}
+function keyFor(di,ei,si,wk){return "l."+di+"."+ei+"."+si+"."+wk+mSfx()}
+function noteKey(di,ei,wk){return "n."+di+"."+ei+"."+wk+mSfx()}
 function lastVal(di,ei,si,wk){for(var w=wk-1;w>=1;w--){var v=db.logs[keyFor(di,ei,si,w)];if(v&&(v.kg||v.reps))return v}return null}
 
 function renderHeader(){
@@ -427,6 +432,7 @@ function renderHeader(){
   document.getElementById("phName").textContent=PHASE[db.week];
   document.getElementById("rirVal").textContent=RIR[db.week];
   document.getElementById("dayTitle").textContent=DAYS[curDay].short;
+  var mn=document.getElementById("mesoNum"); if(mn) mn.textContent=db.meso;
 }
 
 function renderDays(){
@@ -468,7 +474,7 @@ function renderTrain(){
 
     var sets="";
     for(var si=0; si<x.s; si++){
-      var kK=keyFor(curDay,ei,si,db.week)+".kg", rK=keyFor(curDay,ei,si,db.week)+".rp";
+      var kK=keyFor(curDay,ei,si,db.week)+".kg", rK=keyFor(curDay,ei,si,db.week)+".rp", iK=keyFor(curDay,ei,si,db.week)+".ri";
       var cur=db.logs[keyFor(curDay,ei,si,db.week)]||{};
       var last=lastVal(curDay,ei,si,db.week)||{};
       var phK=last.kg?("prev "+last.kg):"kg", phR=last.reps?(last.reps+" reps"):"reps";
@@ -476,6 +482,7 @@ function renderTrain(){
         +'<span class="slabel">S'+(si+1)+'</span>'
         +'<div class="field"><span class="unit">kg</span><input inputmode="decimal" data-k="'+kK+'" value="'+(cur.kg||"")+'" placeholder="'+esc(phK)+'"></div>'
         +'<div class="field"><span class="unit">reps</span><input inputmode="numeric" data-k="'+rK+'" value="'+(cur.reps||"")+'" placeholder="'+esc(phR)+'"></div>'
+        +'<div class="field"><span class="unit">rir</span><input inputmode="numeric" data-k="'+iK+'" value="'+(cur.rir||"")+'" placeholder="'+esc(RIR[db.week])+'"></div>'
         +'</div>';
     }
     var alts=x.alt.map(function(a){return "<div>"+esc(a)+"</div>"}).join("");
@@ -490,6 +497,8 @@ function renderTrain(){
         +'</div>'
       +'</div>'
       +'<div class="sets">'+sets+'</div>'
+      +'<div class="setrow" style="grid-template-columns:34px 1fr"><span class="slabel">EQ</span>'
+        +'<div class="field"><span class="unit">equipo</span><input data-n="'+noteKey(curDay,ei,db.week)+'" value="'+esc(db.notes[noteKey(curDay,ei,db.week)]||"")+'" placeholder="que maquina / variante usaste"></div></div>'
       +'<details class="alts"><summary><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 9l5 3-5 3z"/></svg>Cómo se hace<span class="caret"></span></summary><div class="altlist tech"><div class="cue">'+esc(x.cue)+'</div>'
         +'<a class="ytlink" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.yt)+'" target="_blank" rel="noopener">Ver video en YouTube ↗</a></div></details>'
       +'<details class="alts"><summary><svg viewBox="0 0 24 24"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>Alternativas<span class="caret"></span></summary><div class="altlist">'+alts+'</div></details>';
@@ -497,13 +506,22 @@ function renderTrain(){
   });
 
   // bind inputs
+  wrap.querySelectorAll("input[data-n]").forEach(function(inp){
+    if(inp.value) inp.classList.add("done");
+    inp.addEventListener("input",function(){
+      db.notes[inp.getAttribute("data-n")]=inp.value.trim();
+      inp.classList.toggle("done", !!inp.value.trim());
+      save();
+    });
+  });
   wrap.querySelectorAll("input[data-k]").forEach(function(inp){
     if(inp.value) inp.classList.add("done");
     inp.addEventListener("input",function(){
-      var full=inp.getAttribute("data-k"); var isKg=full.slice(-3)===".kg";
+      var full=inp.getAttribute("data-k"); var sfx=full.slice(-3);
       var base=full.slice(0,-3);
+      var fld = sfx===".kg" ? "kg" : (sfx===".rp" ? "reps" : "rir");
       db.logs[base]=db.logs[base]||{};
-      db.logs[base][isKg?"kg":"reps"]=inp.value.trim();
+      db.logs[base][fld]=inp.value.trim().replace(",",".");
       inp.classList.toggle("done", !!inp.value.trim());
       save();
     });
@@ -623,13 +641,14 @@ document.getElementById("bwInput").addEventListener("keydown",function(e){if(e.k
 
 // ---- export ----
 function buildCSV(){
-  var rows=["tipo,dia,ejercicio,semana,serie,kg,reps"];
+  var rows=["tipo,meso,dia,ejercicio,semana,serie,kg,reps,rir,equipo"];
   Object.keys(db.logs||{}).forEach(function(k){
-    var m=k.match(/^l\.(\d+)\.(\d+)\.(\d+)\.(\d+)$/); if(!m)return;
-    var di=+m[1],ei=+m[2],si=+m[3],wk=+m[4], v=db.logs[k]||{};
+    var m=k.match(/^l\.(\d+)\.(\d+)\.(\d+)\.(\d+)(?:\.m(\d+))?$/); if(!m)return;
+    var di=+m[1],ei=+m[2],si=+m[3],wk=+m[4], ms=m[5]?+m[5]:1, v=db.logs[k]||{};
     if(!v.kg&&!v.reps)return;
     var d=DAYS[di], name=d&&d.ex[ei]?d.ex[ei].name:("ej"+ei);
-    rows.push(["fuerza",(d?d.code:di),'"'+name.replace(/"/g,'""')+'"',wk,si+1,v.kg||"",v.reps||""].join(","));
+    var nt=(db.notes||{})["n."+di+"."+ei+"."+wk+(ms>1?".m"+ms:"")]||"";
+    rows.push(["fuerza",ms,(d?d.code:di),'"'+name.replace(/"/g,'""')+'"',wk,si+1,v.kg||"",v.reps||"",v.rir||"",'"'+nt.replace(/"/g,'""')+'"'].join(","));
   });
   rows.push(""); rows.push("tipo,fecha,kg");
   Object.keys(db.bw||{}).sort().forEach(function(dt){rows.push(["peso",dt,db.bw[dt]].join(","))});
@@ -643,6 +662,12 @@ function copyData(){
   } else { window.prompt("Copia tus datos:",csv); }
 }
 document.getElementById("exportBtn").onclick=copyData;
+document.getElementById("newMesoBtn").onclick=function(){
+  if(!window.confirm("Empezar el mesociclo "+(db.meso+1)+"?\n\nTus datos actuales quedan guardados y las casillas arrancan vacias en la semana 1."))return;
+  db.meso++; db.week=1; save();
+  renderHeader(); renderTrain(); renderMeso();
+  window.alert("Listo. Vas en el mesociclo "+db.meso+", semana 1.");
+};
 
 // init
 if(db.weight) document.getElementById("wKg").value=db.weight;
